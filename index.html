@@ -5,8 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Markdown Interpreter</title>
+
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+  <header>
+    <h1>Markdown Interpreter</h1>
+    <h2>Convert markdown syntax into HTML.</h2>
+  </header>
   
+  <main>
+    <h2>Markdown:</h2>
+    <textarea id="markdown"></textarea>
+    <button id="convert-markdown" type="button">Convert</button>
+  
+    <h2>HTML:</h2>
+    <section id="interpreted-markdown"></section>
+  </main>
+
+  <script src="js/index.js"></script>
 </body>
 </html>
