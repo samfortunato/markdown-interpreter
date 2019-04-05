@@ -1,32 +1,45 @@
-const markdownTextarea = document.querySelector('#markdown');
-const interpretedMarkdownArea = document.querySelector('#interpreted-markdown');
-
-markdownTextarea.addEventListener('input', (evt) => {
-  const markdown = convertMarkdownToH1(evt.target.value);
-
-  if (markdown !== null) {
-    interpretedMarkdownArea.appendChild(markdown);
-  }
-});
-
 const markdownSyntaxMatchers = {
   h1: /^#\s{1,}(.+)\n?$/,
   h2: /^##\s{1,}(.+)\n?$/
 };
 
-const convertMarkdownToHTML = (markdown) => {
+const markdownTextarea = document.querySelector('#markdown');
+const interpretedMarkdownArea = document.querySelector('#interpreted-markdown');
 
-};
-
-const convertMarkdownToH1 = (markdown) => {
-  const regExMatch = markdown.match(markdownSyntaxMatchers.h1);
+const convertMarkdownToHTMLElement = (markdown) => {
+  const htmlElementType = Object.keys(markdownSyntaxMatchers).find((element) => {
+    return markdownSyntaxMatchers[element].test(markdown);
+  });
   
-  if (regExMatch) {
-    const h1 = document.createElement('h1');
-    h1.textContent = regExMatch[1];
-
-    return h1;
+  if (htmlElementType) {
+    const regExMatch = markdown.match(markdownSyntaxMatchers[htmlElementType]);
+    const textContent = regExMatch[1];
+    
+    const htmlElement = document.createElement(htmlElementType);
+    htmlElement.textContent = textContent;
+    
+    return htmlElement;
   } else {
     return null;
   }
 };
+
+markdownTextarea.addEventListener('input', (evt) => {
+  const convertedElements = [];
+  const individualMarkdownLines = evt.target.value.split('\n');
+
+  individualMarkdownLines.forEach((line) => {
+    if (line !== '') {
+      const convertedLine = convertMarkdownToHTMLElement(line);
+      convertedElements.push(convertedLine);
+    }
+  });
+
+  interpretedMarkdownArea.innerHTML = '';
+
+  convertedElements.forEach((element) => {
+    if (element !== null) {
+      interpretedMarkdownArea.appendChild(element);
+    }
+  });
+});
