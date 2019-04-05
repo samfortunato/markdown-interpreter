@@ -1,30 +1,58 @@
-const markdownSyntaxMatchers = {
-  h1: /^#\s{1,}(.+)\n?$/,
-  h2: /^##\s{1,}(.+)\n?$/,
-  h3: /^###\s{1,}(.+)\n?$/,
-  h4: /^####\s{1,}(.+)\n?$/,
-  h5: /^#####\s{1,}(.+)\n?$/,
-  h6: /^######\s{1,}(.+)\n?$/
-};
-
 const markdownTextarea = document.querySelector('#markdown');
 const interpretedMarkdownArea = document.querySelector('#interpreted-markdown');
 
 const convertMarkdownToHTMLElement = (markdown) => {
-  const htmlElementType = Object.keys(markdownSyntaxMatchers).find((element) => {
-    return markdownSyntaxMatchers[element].test(markdown);
+  const htmlElementType = Object.keys(markdownTagMatchers).find((element) => {
+    return markdownTagMatchers[element].test(markdown);
   });
-  
-  if (htmlElementType) {
-    const regExMatch = markdown.match(markdownSyntaxMatchers[htmlElementType]);
-    const textContent = regExMatch[1];
-    
-    const htmlElement = document.createElement(htmlElementType);
-    htmlElement.textContent = textContent;
-    
-    return htmlElement;
-  } else {
-    return null;
+
+  switch (htmlElementType) {
+    case 'h1':
+    case 'h2':
+    case 'h3':
+    case 'h4':
+    case 'h5':
+    case 'h6':
+      const regExMatch = markdown.match(markdownTagMatchers[htmlElementType]);
+      const textContent = regExMatch[1];
+      
+      const htmlElement = document.createElement(htmlElementType);
+      const innerHTML = convertMarkdownToFormattedText(textContent);
+
+      if (innerHTML instanceof Node) {
+        htmlElement.appendChild(innerHTML);
+      } else {
+        htmlElement.textContent = textContent;
+      }
+      
+      return htmlElement;
+
+    case 'p':
+      break;
+
+    default:
+      return null;
+  }
+};
+
+const convertMarkdownToFormattedText = (markdown) => {
+  const htmlElementType = Object.keys(markdownFormatMatchers).find((element) => {
+    return markdownFormatMatchers[element].test(markdown);
+  });
+
+  switch (htmlElementType) {
+    case 'em':
+    case 'strong':
+      const regExMatch = markdown.match(markdownFormatMatchers[htmlElementType]);
+      const textContent = regExMatch[1];
+
+      const htmlElement = document.createElement(htmlElementType);
+      htmlElement.textContent = textContent;
+
+      return htmlElement;
+
+    default:
+      return markdown;
   }
 };
 
